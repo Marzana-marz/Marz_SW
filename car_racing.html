@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Car Racing Game</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #333; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    #gameArea {
+      position: relative;
+      width: 300px;
+      height: 500px;
+      background: #222;
+      overflow: hidden;
+      border: 3px solid #fff;
+    }
+    .car {
+      position: absolute;
+      width: 50px;
+      height: 100px;
+      bottom: 10px;
+      background: red;
+      left: 125px;
+      border-radius: 5px;
+    }
+    .enemy {
+      position: absolute;
+      width: 50px;
+      height: 100px;
+      background: yellow;
+      top: -100px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="gameArea">
+  <div class="car" id="playerCar"></div>
+</div>
+
+<script>
+  const gameArea = document.getElementById("gameArea");
+  const playerCar = document.getElementById("playerCar");
+  const gameWidth = gameArea.clientWidth;
+
+  let playerX = playerCar.offsetLeft;
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowLeft" && playerX > 0) {
+      playerX -= 25;
+    } else if (e.key === "ArrowRight" && playerX < gameWidth - 50) {
+      playerX += 25;
+    }
+    playerCar.style.left = playerX + "px";
+  });
+
+  function createEnemy() {
+    const enemy = document.createElement("div");
+    enemy.classList.add("enemy");
+    enemy.style.left = Math.floor(Math.random() * (gameWidth - 50)) + "px";
+    gameArea.appendChild(enemy);
+
+    let enemyY = -100;
+    const move = setInterval(() => {
+      enemyY += 5;
+      enemy.style.top = enemyY + "px";
+
+      // Check for collision
+      if (
+        enemyY + 100 >= gameArea.clientHeight - 10 &&
+        enemy.offsetLeft < playerX + 50 &&
+        enemy.offsetLeft + 50 > playerX
+      ) {
+        alert("💥 Game Over!");
+        clearInterval(move);
+        location.reload();
+      }
+
+      // Remove enemy if it goes off screen
+      if (enemyY > gameArea.clientHeight) {
+        clearInterval(move);
+        enemy.remove();
+      }
+    }, 30);
+  }
+
+  setInterval(createEnemy, 1000);
+</script>
+
+</body>
+</html>
